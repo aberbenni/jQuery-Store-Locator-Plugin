@@ -116,7 +116,9 @@
 		'noResultsTitle'           : 'No results',
 		'noResultsDesc'            : 'No locations were found with the given criteria. Please modify your selections or input.',
 		'nextPage'                 : 'Next &raquo;',
-		'prevPage'                 : '&laquo; Prev'
+		'prevPage'                 : '&laquo; Prev',
+		'numberOfResultsFound'     : '{0} results found',
+		'oneResultFound'           : '1 result found'
 	};
 
 	// Plugin constructor
@@ -1862,8 +1864,9 @@
 			locList.empty();
 
 			// Append the no results message
-			noResults = $('<li><div class="bh-sl-noresults-title">' + this.settings.noResultsTitle +  '</div><br><div class="bh-sl-noresults-desc">' + this.settings.noResultsDesc + '</li>').hide().fadeIn();
+			noResults = $('<li><div class="bh-sl-noresults-desc">' + this.settings.noResultsDesc + '</li>').hide().fadeIn();
 			locList.append(noResults);
+			$('.' + this.settings.locationList +' h3').text(this.settings.noResultsTitle);
 
 			// Center on the original origin or 0,0 if not available
 			if ((olat) && (olng)) {
@@ -2313,6 +2316,11 @@
 			locList.empty();
 
 			// Set up the location list markup
+			if(markers.length>1)
+				$('.' + this.settings.locationList +' h3').text(_this.settings.numberOfResultsFound.format([markers.length]));
+			else if(markers.length==1)
+				$('.' + this.settings.locationList +' h3').text(_this.settings.oneResultFound);
+			
 			if (firstRun && _this.settings.fullMapStartListLimit !== false && !isNaN(_this.settings.fullMapStartListLimit) && _this.settings.fullMapStartListLimit !== -1) {
 				for (var m = 0; m < _this.settings.fullMapStartListLimit; m++) {
 					var currentMarker = markers[m];
@@ -2468,3 +2476,12 @@
 
 
 })(jQuery, window, document);
+
+String.prototype.format = function() {
+  var str = this;
+  for (var i = 0; i < arguments.length; i++) {
+    var reg = new RegExp("\\{" + i + "\\}", "gm");
+    str = str.replace(reg, arguments[i]);
+  }
+  return str;
+}
